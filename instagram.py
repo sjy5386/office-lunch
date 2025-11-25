@@ -53,11 +53,13 @@ class EdgeMediaToCaption:
 def get_instagram_web_profile_info(
         username: str,
         instagram_app_id: str = os.environ.get('INSTAGRAM_APP_ID', '936619743392459'),
-):
+) -> InstagramProfileInfo:
     url = 'https://www.instagram.com/api/v1/users/web_profile_info/'
     res = requests.get(url, params={
         'username': username,
     }, headers={
         'X-IG-App-ID': instagram_app_id,  # useragent mismatch
     })
+    if not res.ok:
+        print(res.json())
     return dacite.from_dict(InstagramApiResponse, res.json()).data
