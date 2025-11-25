@@ -13,8 +13,20 @@ if __name__ == '__main__':
         if slack_webhook_url:
             send_slack_webhook(
                 payload=SlackWebhookPayload(
-                    text=menu,
+                    text=menu.text,
                     username=restaurant.name,
+                    blocks=[
+                        SlackWebhookPayload.SectionBlock(
+                            text=SlackWebhookPayload.TextObject(
+                                type='plain_text',
+                                text=menu.text,
+                            ),
+                        ),
+                        SlackWebhookPayload.ImageBlock(
+                            alt_text=menu.text,
+                            image_url=menu.image_url,
+                        ),
+                    ] if menu.image_url else None,
                 ),
                 webhook_url=slack_webhook_url,
             )
