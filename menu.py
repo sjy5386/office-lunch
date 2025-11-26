@@ -47,6 +47,6 @@ def get_menu_from_kakao_post(pf_id: str) -> Menu:
     posts = get_kakao_plus_friend_posts(pf_id)
     item = sorted(posts.items, key=lambda x: x.created_at, reverse=True)[0]
     return Menu(
-        text=item.contents[0].v,
+        text=item.title + '\n' + item.contents[0].v,
         image_url=None,
     )
