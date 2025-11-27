@@ -7,9 +7,8 @@ from slack import send_slack_webhook, SlackWebhookPayload
 
 if __name__ == '__main__':
     print(datetime.datetime.now())
-    for restaurant in list(Restaurant):
-        if restaurant.menu_frequency == MenuFrequency.WEEKLY and datetime.date.today().weekday() != 0:
-            continue
+    menu_frequency = MenuFrequency[os.environ.get('MENU_FREQUENCY', MenuFrequency.DAILY.name)]
+    for restaurant in filter(lambda x: x.menu_frequency == menu_frequency, Restaurant):
         menu = restaurant.get_menu()
         print(restaurant.name, menu)
         slack_webhook_url = os.environ.get('SLACK_WEBHOOK_URL')

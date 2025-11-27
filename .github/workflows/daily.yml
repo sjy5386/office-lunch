@@ -1,11 +1,11 @@
 name: 오늘 급식 메뉴는 뭔가요?
 on:
   schedule:
-    - cron: '0 0 ? * MON-FRI' # KST 기준 월-금 오전 9시
+    - cron: '30 1 ? * MON-FRI' # KST 기준 월 오전 10시 30분
   workflow_dispatch:
 
 jobs:
-  office-lunch-menu:
+  daily-lunch-menu:
     runs-on: ubuntu-latest
     steps:
       # 1. 코드 체크아웃
@@ -25,6 +25,6 @@ jobs:
       # 4. 실행
       - name: Run
         env:
+          MENU_FREQUENCY: 'DAILY'
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          USE_OCR: ${{ vars.USE_OCR }}
         run: python main.py
