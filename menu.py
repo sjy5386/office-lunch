@@ -65,7 +65,7 @@ def get_menu_from_kakao_profile(pf_id: str) -> Menu:
 def get_menu_from_kakao_post(pf_id: str) -> Menu:
     posts = get_kakao_plus_friend_posts(pf_id)
     item = sorted(posts.items, key=lambda x: x.created_at, reverse=True)[0]
-    created_at = datetime.datetime.fromtimestamp(item.created_at)
+    created_at = datetime.datetime.fromtimestamp(item.created_at / 1000)
     if datetime.datetime.now() - created_at > datetime.timedelta(hours=12):
         print(created_at)
     return Menu(
