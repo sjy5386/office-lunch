@@ -6,7 +6,7 @@ on:
 
 jobs:
   daily-menu:
-    uses: ./.github/workflows/get-menu.yml@main
+    uses: ./.github/workflows/get-menu.yml
     with:
       MENU_FREQUENCY: 'DAILY'
     secrets: inherit
