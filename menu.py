@@ -37,7 +37,8 @@ def get_daily_menu_from_instagram_feed(username: str) -> Menu:
     taken_at_timestamp = datetime.datetime.fromtimestamp(last_feed.taken_at_timestamp)
     if datetime.datetime.now() - taken_at_timestamp > datetime.timedelta(hours=6):
         raise MenuNotFoundException('Not found instagram feed')
-    menu_text = map(lambda x: x.node, last_feed.edge_media_to_caption.edges).__next__().text
+    menu_text = next(map(lambda x: x.node,
+                         last_feed.edge_media_to_caption.edges)).text if last_feed.edge_media_to_caption.edges else username
     menu_image_url = last_feed.display_url
     return Menu(
         text=menu_text,
@@ -46,14 +47,15 @@ def get_daily_menu_from_instagram_feed(username: str) -> Menu:
 
 
 def get_weekly_menu_from_instagram_feed(username: str) -> Menu:
-    last_feed = filter(lambda x: x.pinned_for_users,
-                       map(lambda x: x.node,
-                           get_instagram_web_profile_info(username).user.edge_owner_to_timeline_media.edges)).__next__()
+    last_feed = next(filter(lambda x: x.pinned_for_users,
+                            map(lambda x: x.node,
+                                get_instagram_web_profile_info(username).user.edge_owner_to_timeline_media.edges)))
     taken_at_timestamp = datetime.datetime.fromtimestamp(last_feed.taken_at_timestamp)
     if datetime.datetime.now() - taken_at_timestamp > datetime.timedelta(weeks=1):
         print(taken_at_timestamp)
         raise MenuNotFoundException('Not found instagram feed')
-    menu_text = map(lambda x: x.node, last_feed.edge_media_to_caption.edges).__next__().text
+    menu_text = next(map(lambda x: x.node,
+                         last_feed.edge_media_to_caption.edges)).text if last_feed.edge_media_to_caption.edges else username
     menu_image_url = last_feed.display_url
     return Menu(
         text=menu_text,
@@ -63,7 +65,7 @@ def get_weekly_menu_from_instagram_feed(username: str) -> Menu:
 
 def get_menu_from_kakao_profile(pf_id: str) -> Menu:
     profile = get_kakao_plus_friend_profiles(pf_id)
-    profile_card = filter(lambda x: x.type == 'profile', profile.cards).__next__()
+    profile_card = next(filter(lambda x: x.type == 'profile', profile.cards))
     menu_image_url = profile_card.profile.profile_image.url
     return Menu(
         text=profile_card.profile.status_message,
