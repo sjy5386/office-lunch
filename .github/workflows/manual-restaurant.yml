@@ -1,0 +1,24 @@
+name: 식당별 메뉴 가져오기 (수동)
+on:
+  workflow_dispatch:
+    inputs:
+      RESTAURANT:
+        description: '메뉴를 가져올 식당을 선택하세요'
+        required: true
+        type: choice
+        options:
+          - 알찬푸드_구내식당
+          - 알찬푸드_구내식당_저녁
+          - 알찬푸드_구내식당_주간식단표
+          - 우림_더이룸푸드
+          - 우림_더이룸푸드_저녁
+          - 우림_더이룸푸드_식단표
+          - 정원정_한식뷔페
+          - 한신IT타워_구내식당
+
+jobs:
+  manual-menu:
+    uses: ./.github/workflows/get-menu.yml
+    with:
+      RESTAURANT: ${{ github.event.inputs.RESTAURANT }}
+    secrets: inherit

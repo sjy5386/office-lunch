@@ -3,7 +3,10 @@ on:
   workflow_call:
     inputs:
       MENU_FREQUENCY:
-        required: true
+        required: false
+        type: string
+      RESTAURANT:
+        required: false
         type: string
 
 jobs:
@@ -28,5 +31,6 @@ jobs:
       - name: Run
         env:
           MENU_FREQUENCY: ${{ inputs.MENU_FREQUENCY }}
+          RESTAURANT: ${{ inputs.RESTAURANT }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: python main.py
