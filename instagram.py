@@ -1,3 +1,4 @@
+import logging
 import os
 from dataclasses import dataclass
 
@@ -78,6 +79,6 @@ def get_instagram_web_profile_info(
     }, headers={
         'X-IG-App-ID': instagram_app_id,  # useragent mismatch
     })
-    if not res.ok:
-        print(res.json())
+    logging.info(f'{res.status_code}: {res.text}')
+    res.raise_for_status()
     return dacite.from_dict(InstagramApiResponse, res.json()).data

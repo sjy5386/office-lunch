@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 
 import dacite
@@ -35,6 +36,8 @@ class KakaoPlusFriendProfiles:
 def get_kakao_plus_friend_profiles(pf_id: str) -> KakaoPlusFriendProfiles:
     url = f'https://pf.kakao.com/rocket-web/web/v2/profiles/{pf_id}'
     res = requests.get(url)
+    logging.info(f'{res.status_code}: {res.text}')
+    res.raise_for_status()
     return dacite.from_dict(KakaoPlusFriendProfiles, res.json())
 
 
@@ -63,4 +66,6 @@ def get_kakao_plus_friend_posts(pf_id: str) -> KakaoPlusFriendPosts:
     res = requests.get(url, params={
         'includePinnedPost': 'true',
     })
+    logging.info(f'{res.status_code}: {res.text}')
+    res.raise_for_status()
     return dacite.from_dict(KakaoPlusFriendPosts, res.json())

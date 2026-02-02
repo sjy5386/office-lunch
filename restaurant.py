@@ -1,3 +1,4 @@
+import logging
 import traceback
 from enum import Enum
 
@@ -33,7 +34,7 @@ class Restaurant(Enum):
                 return get_menu_from_kakao_post(self.menu_source_id)
             raise Exception(f'Unknown menu source {self.menu_source}')
         except Exception as e:
-            print(''.join(traceback.format_exception(e)))
+            logging.error(''.join(traceback.format_exception(e)))
             return Menu(
                 text=str(e),
                 image_url=None,

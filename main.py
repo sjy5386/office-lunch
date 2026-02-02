@@ -1,12 +1,19 @@
 import datetime
+import logging
 import os
 
 from menu import MenuFrequency
 from restaurant import Restaurant
 from slack import send_slack_webhook, SlackWebhookPayload
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='{asctime} {levelname} {process:d} --- [{threadName}] {name}:{lineno} {message}',
+    style='{',
+)
+
 if __name__ == '__main__':
-    print(datetime.datetime.now())
+    logging.info(datetime.datetime.now())
     menu_frequency_env = os.environ.get('MENU_FREQUENCY')
     restaurant_env = os.environ.get('RESTAURANT')
 
@@ -22,7 +29,7 @@ if __name__ == '__main__':
 
     for restaurant in restaurants:
         menu = restaurant.get_menu()
-        print(restaurant.name, menu)
+        logging.info(f'{restaurant.name} {menu}')
         slack_webhook_url = os.environ.get('SLACK_WEBHOOK_URL')
         if slack_webhook_url:
             send_slack_webhook(
