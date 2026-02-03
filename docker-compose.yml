@@ -1,6 +1,8 @@
 services:
   app:
     image: python:3.14-alpine
+    depends_on:
+      - vpn-client
     environment:
       - MENU_FREQUENCY=${MENU_FREQUENCY}
       - RESTAURANT=${RESTAURANT}
@@ -8,4 +10,38 @@ services:
     volumes:
       - .:/app
     working_dir: /app
+    network_mode: "service:vpn-client"
     entrypoint: [ "sh", "-c", "pip install -r requirements.txt && python main.py" ]
+  vpn-client:
+    image: alpine:latest
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - VPN_CONFIG=${VPN_CONFIG}
+      - VPN_USER=${VPN_USER}
+      - VPN_PASS=${VPN_PASS}
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+      - 2606:4700:4700::1111
+      - 2606:4700:4700::1001
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        apk add --no-cache openvpn
+        mkdir -p /etc/openvpn
+
+        echo -e "$${VPN_CONFIG}" > /etc/openvpn/client.ovpn
+        echo -e "$${VPN_USER}\n$${VPN_PASS}" > /etc/openvpn/auth.txt
+        chmod 600 /etc/openvpn/auth.txt
+
+        if grep -q "auth-user-pass" /etc/openvpn/client.ovpn; then
+          sed -i 's/auth-user-pass.*/auth-user-pass \/etc\/openvpn\/auth.txt/' /etc/openvpn/client.ovpn
+        else
+          echo "auth-user-pass /etc/openvpn/auth.txt" >> /etc/openvpn/client.ovpn
+        fi
+
+        exec openvpn --config /etc/openvpn/client.ovpn
