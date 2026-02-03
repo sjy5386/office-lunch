@@ -19,7 +19,7 @@ services:
     devices:
       - /dev/net/tun
     environment:
-      - VPN_CONFIG=${VPN_CONFIG}
+      - VPN_CONFIG_BASE64=${VPN_CONFIG_BASE64}
       - VPN_USER=${VPN_USER}
       - VPN_PASS=${VPN_PASS}
     dns:
@@ -34,7 +34,7 @@ services:
         apk add --no-cache openvpn
         mkdir -p /etc/openvpn
 
-        echo -e "$${VPN_CONFIG}" > /etc/openvpn/client.ovpn
+        echo "$${VPN_CONFIG_BASE64}" | base64 -d > /etc/openvpn/client.ovpn
         echo -e "$${VPN_USER}\n$${VPN_PASS}" > /etc/openvpn/auth.txt
         chmod 600 /etc/openvpn/auth.txt
 
