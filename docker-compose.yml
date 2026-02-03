@@ -1,0 +1,9 @@
+services:
+  app:
+    image: python:3.14-alpine
+    environment:
+      - MENU_FREQUENCY=DAILY
+    volumes:
+      - .:/app
+    working_dir: /app
+    entrypoint: [ "sh", "-c", "pip install -r requirements.txt && python main.py" ]
