@@ -2,6 +2,8 @@ import datetime
 import logging
 import os
 
+import requests
+
 from menu import MenuFrequency
 from restaurant import Restaurant
 from slack import send_slack_webhook, SlackWebhookPayload
@@ -14,6 +16,7 @@ logging.basicConfig(
 
 if __name__ == '__main__':
     logging.info(datetime.datetime.now())
+    logging.info(requests.get('https://icanhazip.com').text)
     menu_frequency_env = os.environ.get('MENU_FREQUENCY')
     restaurant_env = os.environ.get('RESTAURANT')
 
