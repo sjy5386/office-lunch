@@ -17,20 +17,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Python 환경 설정
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.14'
-
-      # 3. 필요한 라이브러리 설치
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      # 4. 실행
-      - name: Run
+      # 2. 실행
+      - name: Run Docker Compose
         env:
           MENU_FREQUENCY: ${{ inputs.MENU_FREQUENCY }}
           RESTAURANT: ${{ inputs.RESTAURANT }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: python main.py
+        run: docker compose up
