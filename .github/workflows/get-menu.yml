@@ -23,4 +23,7 @@ jobs:
           MENU_FREQUENCY: ${{ inputs.MENU_FREQUENCY }}
           RESTAURANT: ${{ inputs.RESTAURANT }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          VPN_CONFIG_BASE64: ${{ secrets.VPN_CONFIG_BASE64 }}
+          VPN_USER: ${{ secrets.VPN_USER }}
+          VPN_PASS: ${{ secrets.VPN_PASS }}
         run: docker compose up
