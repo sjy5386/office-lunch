@@ -2,7 +2,9 @@ services:
   app:
     image: python:3.14-alpine
     environment:
-      - MENU_FREQUENCY=DAILY
+      - MENU_FREQUENCY=${MENU_FREQUENCY}
+      - RESTAURANT=${RESTAURANT}
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
     volumes:
       - .:/app
     working_dir: /app
