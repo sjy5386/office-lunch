@@ -24,7 +24,7 @@ if __name__ == '__main__':
         restaurants = list(filter(lambda x: x.menu_frequency == menu_frequency, Restaurant))
     else:
         # Default behavior if nothing is specified
-        menu_frequency = MenuFrequency.DAILY
+        menu_frequency = MenuFrequency.DAILY_LUNCH
         restaurants = list(filter(lambda x: x.menu_frequency == menu_frequency, Restaurant))
 
     for restaurant in restaurants:
