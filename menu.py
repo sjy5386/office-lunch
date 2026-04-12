@@ -57,7 +57,6 @@ def get_weekly_menu_from_instagram_feed(username: str) -> Menu:
                                 get_instagram_web_profile_info(username).user.edge_owner_to_timeline_media.edges)))
     taken_at_timestamp = datetime.datetime.fromtimestamp(last_feed.taken_at_timestamp)
     if datetime.datetime.now() - taken_at_timestamp > datetime.timedelta(weeks=1):
-        print(taken_at_timestamp)
         raise MenuNotFoundException('Not found instagram feed')
     menu_text = next(map(lambda x: x.node,
                          last_feed.edge_media_to_caption.edges)).text if last_feed.edge_media_to_caption.edges else username
@@ -83,7 +82,6 @@ def get_menu_from_kakao_post(pf_id: str) -> Menu:
     item = sorted(posts.items, key=lambda x: x.created_at, reverse=True)[0]
     created_at = datetime.datetime.fromtimestamp(item.created_at / 1000)
     if datetime.datetime.now() - created_at > datetime.timedelta(hours=6):
-        print(created_at)
         raise MenuNotFoundException('Not found kakao talk channel post')
     return Menu(
         text=item.title + '\n' + item.contents[0].v,
