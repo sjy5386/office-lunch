@@ -27,10 +27,11 @@ if __name__ == '__main__':
         menu_frequency = MenuFrequency.DAILY_LUNCH
         restaurants = list(filter(lambda x: x.menu_frequency == menu_frequency, Restaurant))
 
+    slack_webhook_url = os.environ.get('SLACK_WEBHOOK_URL')
+
     for restaurant in restaurants:
         menu = restaurant.get_menu()
         logging.info(f'{restaurant.name} {menu}')
-        slack_webhook_url = os.environ.get('SLACK_WEBHOOK_URL')
         if slack_webhook_url:
             blocks = [
                 SlackWebhookPayload.SectionBlock(
