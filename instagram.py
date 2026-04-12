@@ -36,11 +36,12 @@ class EdgeOwnerToTimelineMedia:
             id: str
             shortcode: str
             display_url: str
-            accessibility_caption: str
+            accessibility_caption: str | None
             edge_media_to_caption: EdgeMediaToCaption
             taken_at_timestamp: int
             thumbnail_resources: list[ThumbnailResource]
             pinned_for_users: list[PinnedForUser]
+            edge_sidecar_to_children: EdgeSidecarToChildren | None = None
 
             @dataclass
             class ThumbnailResource:
@@ -54,6 +55,19 @@ class EdgeOwnerToTimelineMedia:
                 is_verified: bool
                 profile_pic_url: str
                 username: str
+
+
+@dataclass
+class EdgeSidecarToChildren:
+    edges: list[Edge]
+
+    @dataclass
+    class Edge:
+        node: Node
+
+        @dataclass
+        class Node:
+            display_url: str
 
 
 @dataclass
@@ -81,4 +95,13 @@ def get_instagram_web_profile_info(
     })
     logging.info(f'{res.status_code}: {res.text}')
     res.raise_for_status()
-    return dacite.from_dict(InstagramApiResponse, res.json()).data
+    profile_info = dacite.from_dict(InstagramApiResponse, res.json()).data
+    if profile_info is None:
+        raise ValueError(f'Instagram profile info not found: {username}')
+    return profile_info
+
+
+def get_instagram_post_image_urls(post: EdgeOwnerToTimelineMedia.Edge.Node) -> list[str]:
+    if post.edge_sidecar_to_children and post.edge_sidecar_to_children.edges:
+        return [child.node.display_url for child in post.edge_sidecar_to_children.edges]
+    return [post.display_url]

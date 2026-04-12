@@ -37,5 +37,5 @@ class Restaurant(Enum):
             logging.error(''.join(traceback.format_exception(e)))
             return Menu(
                 text=str(e),
-                image_url=None,
+                image_urls=None,
             )

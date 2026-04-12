@@ -32,22 +32,26 @@ if __name__ == '__main__':
         logging.info(f'{restaurant.name} {menu}')
         slack_webhook_url = os.environ.get('SLACK_WEBHOOK_URL')
         if slack_webhook_url:
+            blocks = [
+                SlackWebhookPayload.SectionBlock(
+                    text=SlackWebhookPayload.TextObject(
+                        type='plain_text',
+                        text=menu.text,
+                    ),
+                ),
+            ]
+            if menu.image_urls:
+                blocks.extend([
+                    SlackWebhookPayload.ImageBlock(
+                        alt_text=f'{menu.text} ({index + 1}/{len(menu.image_urls)})',
+                        image_url=image_url,
+                    ) for index, image_url in enumerate(menu.image_urls)
+                ])
             send_slack_webhook(
                 payload=SlackWebhookPayload(
                     text=menu.text,
                     username=restaurant.name,
-                    blocks=[
-                        SlackWebhookPayload.SectionBlock(
-                            text=SlackWebhookPayload.TextObject(
-                                type='plain_text',
-                                text=menu.text,
-                            ),
-                        ),
-                        SlackWebhookPayload.ImageBlock(
-                            alt_text=menu.text,
-                            image_url=menu.image_url,
-                        ),
-                    ] if menu.image_url else None,
+                    blocks=blocks,
                 ),
                 webhook_url=slack_webhook_url,
             )

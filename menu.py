@@ -2,14 +2,20 @@ import datetime
 from dataclasses import dataclass
 from enum import Enum, auto
 
-from instagram import get_instagram_web_profile_info
+from instagram import get_instagram_post_image_urls, get_instagram_web_profile_info
 from kakao import get_kakao_plus_friend_profiles, get_kakao_plus_friend_posts
 
 
 @dataclass
 class Menu:
     text: str
-    image_url: str | None
+    image_urls: list[str] | None
+
+    @property
+    def image_url(self) -> str | None:
+        if not self.image_urls:
+            return None
+        return self.image_urls[0]
 
 
 class MenuSource(Enum):
@@ -38,10 +44,10 @@ def get_daily_menu_from_instagram_feed(username: str) -> Menu:
         raise MenuNotFoundException('Not found instagram feed')
     menu_text = next(map(lambda x: x.node,
                          last_feed.edge_media_to_caption.edges)).text if last_feed.edge_media_to_caption.edges else username
-    menu_image_url = last_feed.display_url
+    menu_image_urls = get_instagram_post_image_urls(last_feed)
     return Menu(
         text=menu_text,
-        image_url=menu_image_url,
+        image_urls=menu_image_urls,
     )
 
 
@@ -55,10 +61,10 @@ def get_weekly_menu_from_instagram_feed(username: str) -> Menu:
         raise MenuNotFoundException('Not found instagram feed')
     menu_text = next(map(lambda x: x.node,
                          last_feed.edge_media_to_caption.edges)).text if last_feed.edge_media_to_caption.edges else username
-    menu_image_url = last_feed.display_url
+    menu_image_urls = get_instagram_post_image_urls(last_feed)
     return Menu(
         text=menu_text,
-        image_url=menu_image_url,
+        image_urls=menu_image_urls,
     )
 
 
@@ -68,7 +74,7 @@ def get_menu_from_kakao_profile(pf_id: str) -> Menu:
     menu_image_url = profile_card.profile.profile_image.url
     return Menu(
         text=profile_card.profile.status_message,
-        image_url=menu_image_url,
+        image_urls=[menu_image_url],
     )
 
 
@@ -81,5 +87,5 @@ def get_menu_from_kakao_post(pf_id: str) -> Menu:
         raise MenuNotFoundException('Not found kakao talk channel post')
     return Menu(
         text=item.title + '\n' + item.contents[0].v,
-        image_url=None,
+        image_urls=None,
     )
