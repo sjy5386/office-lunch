@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 import dacite
 import requests
+from fake_useragent import UserAgent
 
 
 @dataclass
@@ -88,10 +89,20 @@ def get_instagram_web_profile_info(
         instagram_app_id: str = os.environ.get('INSTAGRAM_APP_ID', '936619743392459'),
 ) -> InstagramProfileInfo:
     url = 'https://www.instagram.com/api/v1/users/web_profile_info/'
+    ua = UserAgent()
     res = requests.get(url, params={
-        'username': username,
+        'username': username
     }, headers={
-        'X-IG-App-ID': instagram_app_id,  # useragent mismatch
+        'User-Agent': ua.random,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'ko-KR,ko;q=0.9,en;q=0.8',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'same-origin',
+        'X-IG-App-ID': instagram_app_id,
+        'Referer': f'https://www.instagram.com/',
     })
     logging.info(f'{res.status_code}: {res.text}')
     res.raise_for_status()
