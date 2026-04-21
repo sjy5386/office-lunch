@@ -1,10 +1,15 @@
 import logging
 import os
+import random
+import time
 from dataclasses import dataclass
 
 import dacite
 import requests
 from fake_useragent import UserAgent
+
+INSTAGRAM_APP_IDS_STR = os.environ.get('INSTAGRAM_APP_ID', '936619743392459,1217981644879628')
+INSTAGRAM_APP_IDS = [app_id.strip() for app_id in INSTAGRAM_APP_IDS_STR.split(',')]
 
 
 @dataclass
@@ -84,26 +89,38 @@ class EdgeMediaToCaption:
             text: str
 
 
+_session: requests.Session | None = None
+
+
+def _get_instagram_session() -> requests.Session:
+    global _session
+    if _session is None:
+        app_id = random.choice(INSTAGRAM_APP_IDS)
+        ua = UserAgent()
+        headers = {
+            'User-Agent': ua.random,
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'ko-KR,ko;q=0.9,en;q=0.8',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin',
+            'Referer': 'https://www.instagram.com/',
+            'X-IG-App-ID': app_id,
+        }
+        _session = requests.Session()
+        _session.headers.update(headers)
+    return _session
+
+
 def get_instagram_web_profile_info(
         username: str,
-        instagram_app_id: str = os.environ.get('INSTAGRAM_APP_ID', '936619743392459'),
 ) -> InstagramProfileInfo:
+    time.sleep(random.uniform(3, 7))
     url = 'https://www.instagram.com/api/v1/users/web_profile_info/'
-    ua = UserAgent()
-    res = requests.get(url, params={
-        'username': username
-    }, headers={
-        'User-Agent': ua.random,
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'ko-KR,ko;q=0.9,en;q=0.8',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
-        'Sec-Fetch-Dest': 'empty',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Site': 'same-origin',
-        'X-IG-App-ID': instagram_app_id,
-        'Referer': f'https://www.instagram.com/',
-    })
+    session = _get_instagram_session()
+    res = session.get(url, params={'username': username})
     logging.info(f'{res.status_code}: {res.text}')
     res.raise_for_status()
     profile_info = dacite.from_dict(InstagramApiResponse, res.json()).data
