@@ -4,7 +4,7 @@ import os
 
 from menu import MenuFrequency
 from restaurant import Restaurant
-from slack import send_slack_webhook, SlackWebhookPayload
+from slack import send_slack_message, SlackMessagePayload
 
 SLACK_IMAGE_BLOCKS_PER_MESSAGE = 3
 
@@ -29,40 +29,42 @@ if __name__ == '__main__':
         menu_frequency = MenuFrequency.DAILY_LUNCH
         restaurants = list(filter(lambda x: x.menu_frequency == menu_frequency, Restaurant))
 
-    slack_webhook_url = os.environ.get('SLACK_WEBHOOK_URL')
+    slack_bot_token = os.environ.get('SLACK_BOT_TOKEN')
+    slack_channel_id = os.environ.get('SLACK_CHANNEL_ID')
 
     for restaurant in restaurants:
         menu = restaurant.get_menu()
         logging.info(f'{restaurant.name} {menu}')
-        if slack_webhook_url:
+        if slack_bot_token and slack_channel_id:
             image_urls = menu.image_urls or []
             image_url_chunks = [
-                image_urls[index:index + SLACK_IMAGE_BLOCKS_PER_MESSAGE]
-                for index in range(0, len(image_urls), SLACK_IMAGE_BLOCKS_PER_MESSAGE)
-            ] or [[]]
+                                   image_urls[index:index + SLACK_IMAGE_BLOCKS_PER_MESSAGE]
+                                   for index in range(0, len(image_urls), SLACK_IMAGE_BLOCKS_PER_MESSAGE)
+                               ] or [[]]
 
             for index, image_url_chunk in enumerate(image_url_chunks):
                 blocks = []
                 if index == 0:
                     blocks.append(
-                        SlackWebhookPayload.SectionBlock(
-                            text=SlackWebhookPayload.TextObject(
+                        SlackMessagePayload.SectionBlock(
+                            text=SlackMessagePayload.TextObject(
                                 type='plain_text',
                                 text=menu.text,
                             ),
                         ),
                     )
                 blocks.extend([
-                    SlackWebhookPayload.ImageBlock(
+                    SlackMessagePayload.ImageBlock(
                         alt_text=f'{menu.text} ({index * SLACK_IMAGE_BLOCKS_PER_MESSAGE + image_index + 1}/{len(image_urls)})',
                         image_url=image_url,
                     ) for image_index, image_url in enumerate(image_url_chunk)
                 ])
-                send_slack_webhook(
-                    payload=SlackWebhookPayload(
+                send_slack_message(
+                    payload=SlackMessagePayload(
                         text=menu.text,
                         username=restaurant.name,
                         blocks=blocks,
                     ),
-                    webhook_url=slack_webhook_url,
+                    bot_token=slack_bot_token,
+                    channel_id=slack_channel_id,
                 )

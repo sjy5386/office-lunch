@@ -6,7 +6,7 @@ import requests
 
 
 @dataclass
-class SlackWebhookPayload:
+class SlackMessagePayload:
     text: str
     username: str | None
     blocks: list[Block] | None = None
@@ -26,7 +26,7 @@ class SlackWebhookPayload:
 
     @dataclass
     class SectionBlock(Block):
-        text: SlackWebhookPayload.TextObject
+        text: SlackMessagePayload.TextObject
         type: str = 'section'
 
     @dataclass
@@ -35,5 +35,18 @@ class SlackWebhookPayload:
         text: str
 
 
-def send_slack_webhook(payload: SlackWebhookPayload, webhook_url: str):
-    requests.post(webhook_url, json=json.loads(json.dumps(payload, default=lambda x: x.__dict__)))
+def send_slack_message(payload: SlackMessagePayload, bot_token: str, channel_id: str):
+    body = json.loads(json.dumps(payload, default=lambda x: x.__dict__))
+    body['channel'] = channel_id
+    response = requests.post(
+        'https://slack.com/api/chat.postMessage',
+        headers={
+            'Authorization': f'Bearer {bot_token}',
+            'Content-Type': 'application/json; charset=utf-8',
+        },
+        json=body,
+    )
+    response.raise_for_status()
+    data = response.json()
+    if not data.get('ok'):
+        raise RuntimeError(f'Slack API error: {data.get("error")}')

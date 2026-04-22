@@ -32,5 +32,6 @@ jobs:
         env:
           MENU_FREQUENCY: ${{ inputs.MENU_FREQUENCY }}
           RESTAURANT: ${{ inputs.RESTAURANT }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
         run: python main.py
