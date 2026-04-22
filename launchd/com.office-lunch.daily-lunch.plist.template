@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>__LABEL__</string>
+
+	<key>ProgramArguments</key>
+	<array>
+		<string>__DOCKER_BIN__</string>
+		<string>compose</string>
+		<string>run</string>
+		<string>--rm</string>
+		<string>-e</string>
+		<string>MENU_FREQUENCY=DAILY_LUNCH</string>
+		<string>app</string>
+	</array>
+
+	<key>WorkingDirectory</key>
+	<string>__PROJECT_DIR__</string>
+
+	<key>StartCalendarInterval</key>
+	<array>
+		<dict>
+			<key>Weekday</key>
+			<integer>1</integer>
+			<key>Hour</key>
+			<integer>11</integer>
+			<key>Minute</key>
+			<integer>15</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>2</integer>
+			<key>Hour</key>
+			<integer>11</integer>
+			<key>Minute</key>
+			<integer>15</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>3</integer>
+			<key>Hour</key>
+			<integer>11</integer>
+			<key>Minute</key>
+			<integer>15</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>4</integer>
+			<key>Hour</key>
+			<integer>11</integer>
+			<key>Minute</key>
+			<integer>15</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>5</integer>
+			<key>Hour</key>
+			<integer>11</integer>
+			<key>Minute</key>
+			<integer>15</integer>
+		</dict>
+	</array>
+
+	<key>StandardOutPath</key>
+	<string>__HOME_DIR__/Library/Logs/office-lunch.daily-lunch.stdout.log</string>
+
+	<key>StandardErrorPath</key>
+	<string>__HOME_DIR__/Library/Logs/office-lunch.daily-lunch.stderr.log</string>
+</dict>
+</plist>

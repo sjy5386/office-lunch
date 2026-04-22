@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>__LABEL__</string>
+
+	<key>ProgramArguments</key>
+	<array>
+		<string>__DOCKER_BIN__</string>
+		<string>compose</string>
+		<string>run</string>
+		<string>--rm</string>
+		<string>-e</string>
+		<string>MENU_FREQUENCY=WEEKLY</string>
+		<string>app</string>
+	</array>
+
+	<key>WorkingDirectory</key>
+	<string>__PROJECT_DIR__</string>
+
+	<key>StartCalendarInterval</key>
+	<dict>
+		<key>Weekday</key>
+		<integer>1</integer>
+		<key>Hour</key>
+		<integer>11</integer>
+		<key>Minute</key>
+		<integer>10</integer>
+	</dict>
+
+	<key>StandardOutPath</key>
+	<string>__HOME_DIR__/Library/Logs/office-lunch.weekly.stdout.log</string>
+
+	<key>StandardErrorPath</key>
+	<string>__HOME_DIR__/Library/Logs/office-lunch.weekly.stderr.log</string>
+</dict>
+</plist>
