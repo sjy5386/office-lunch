@@ -4,9 +4,7 @@ import os
 
 from menu import MenuFrequency
 from restaurant import Restaurant
-from slack import send_slack_message, SlackMessagePayload
-
-SLACK_IMAGE_BLOCKS_PER_MESSAGE = 3
+from slack import send_slack_post
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -36,35 +34,10 @@ if __name__ == '__main__':
         menu = restaurant.get_menu()
         logging.info(f'{restaurant.name} {menu}')
         if slack_bot_token and slack_channel_id:
-            image_urls = menu.image_urls or []
-            image_url_chunks = [
-                                   image_urls[index:index + SLACK_IMAGE_BLOCKS_PER_MESSAGE]
-                                   for index in range(0, len(image_urls), SLACK_IMAGE_BLOCKS_PER_MESSAGE)
-                               ] or [[]]
-
-            for index, image_url_chunk in enumerate(image_url_chunks):
-                blocks = []
-                if index == 0:
-                    blocks.append(
-                        SlackMessagePayload.SectionBlock(
-                            text=SlackMessagePayload.TextObject(
-                                type='plain_text',
-                                text=menu.text,
-                            ),
-                        ),
-                    )
-                blocks.extend([
-                    SlackMessagePayload.ImageBlock(
-                        alt_text=f'{menu.text} ({index * SLACK_IMAGE_BLOCKS_PER_MESSAGE + image_index + 1}/{len(image_urls)})',
-                        image_url=image_url,
-                    ) for image_index, image_url in enumerate(image_url_chunk)
-                ])
-                send_slack_message(
-                    payload=SlackMessagePayload(
-                        text=menu.text,
-                        username=restaurant.name,
-                        blocks=blocks,
-                    ),
-                    bot_token=slack_bot_token,
-                    channel_id=slack_channel_id,
-                )
+            send_slack_post(
+                bot_token=slack_bot_token,
+                channel_id=slack_channel_id,
+                username=restaurant.name,
+                text=menu.text,
+                image_urls=menu.image_urls or [],
+            )
